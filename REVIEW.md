@@ -1,27 +1,26 @@
-# REVIEW — Phase 2: feat/search-provider
+# REVIEW — Phase 3: feat/observability
 
 ## Architecture review
 
-- **PASS** — Mirrors `crawl` factory pattern; engine remains orchestrator.
-- Search errors flow into existing `RetryWithPolicy` loop on search step.
-- No new packages; `internal/search` stays cohesive.
+- **PASS** — Observability stays in `internal/observability` + `run` domain types; no new services.
+- `output` formats `run.Run` only; engine populates fields at end of `RunTask`.
 
 ## Complexity review
 
-- **PASS** — ~200 LOC for HTTP provider + tests; no new abstractions beyond factory.
-- DDG JSON parsing is localized with httptest fixtures.
+- **PASS** — Classification is one function; step log conversion is a small mapper.
+- Legacy JSON migration isolated to `decodeRun`.
 
 ## DX review
 
-- **PASS** — `--search http` documented in RULES; example script added.
-- Deterministic mode behavior explained in `explain` output when search overridden.
+- **PASS** — `inspect --format markdown` shows step timeline table.
+- `explain` includes `observability` block listing inspect fields and error classes.
 
 ## Future debt
 
-- DuckDuckGo API is not a full SERP; document in README.
-- No separate integration test against live API (network flake in CI).
-- Phase 3 should expose search provider name on run record / inspect.
+- Error classes are heuristic; may need explicit codes from providers later.
+- MCP/plan steps not always in step_logs timeline (plan/mcp are auxiliary).
+- Phase 4: benchmark step log overhead.
 
 ## Verdict
 
-**APPROVED** — Merge after `make test`, `go test -race ./...`, `go vet ./...`.
+**APPROVED** — Merge after full test suite + race detector.

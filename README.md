@@ -178,7 +178,7 @@ MCP (offline stub):
 |---------|--------|
 | **v0.1.0** | CLI, mocks, HTTP crawler, MCP HTTP, docs |
 | **v0.2.x** | HTTP search provider (`--search http`) |
-| v0.3.x | Richer inspect / observability |
+| v0.3.x | Step logs, classified errors, inspect timeline |
 | v1.x | Open-source packaging, benchmarks, examples |
 
 See [CHANGELOG.md](CHANGELOG.md).

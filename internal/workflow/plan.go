@@ -8,16 +8,23 @@ type PlanStep struct {
 	Description string `json:"description"`
 }
 
+type ObservabilityPlan struct {
+	InspectFields []string `json:"inspect_fields"`
+	PerStep       []string `json:"per_step_metrics"`
+	ErrorClasses  []string `json:"error_classes"`
+}
+
 type Plan struct {
-	Task        string     `json:"task"`
-	Mode        string     `json:"mode"`
-	Search      string     `json:"search"`
-	Crawler     string     `json:"crawler"`
-	MCPEndpoint string     `json:"mcp_endpoint,omitempty"`
-	Steps       []PlanStep `json:"steps"`
-	Providers   []string   `json:"providers"`
-	Behavior    string     `json:"expected_behavior"`
-	RunIDHint   string     `json:"run_id_hint,omitempty"`
+	Task          string            `json:"task"`
+	Mode          string            `json:"mode"`
+	Search        string            `json:"search"`
+	Crawler       string            `json:"crawler"`
+	MCPEndpoint   string            `json:"mcp_endpoint,omitempty"`
+	Steps         []PlanStep        `json:"steps"`
+	Providers     []string          `json:"providers"`
+	Behavior      string            `json:"expected_behavior"`
+	RunIDHint     string            `json:"run_id_hint,omitempty"`
+	Observability ObservabilityPlan `json:"observability"`
 }
 
 func DefaultSteps() []string {
@@ -30,6 +37,36 @@ func defaultPlanSteps(search, crawler string) []PlanStep {
 		{Name: "crawl", Provider: crawler, Description: "fetch page content with retries"},
 		{Name: "extract", Provider: "extractor", Description: "strip HTML and extract text"},
 		{Name: "normalize", Provider: "normalizer", Description: "structure output for downstream agents"},
+	}
+}
+
+func defaultObservabilityPlan() ObservabilityPlan {
+	return ObservabilityPlan{
+		InspectFields: []string{
+			"duration_ms",
+			"retries",
+			"step_logs",
+			"classified_errors",
+			"search",
+			"crawler",
+			"mode",
+		},
+		PerStep: []string{
+			"duration_ms",
+			"retries",
+			"provider",
+			"status",
+			"error_class",
+		},
+		ErrorClasses: []string{
+			"rate_limit",
+			"timeout",
+			"server_error",
+			"client_error",
+			"network",
+			"provider",
+			"unknown",
+		},
 	}
 }
 
@@ -62,15 +99,17 @@ func ExplainPlan(task, mode, search, crawler, mcpEndpoint, mcpTransport string) 
 		providers = append(providers, "mcp_"+transport)
 		behavior += "; MCP " + transport + " transport for tool-backed providers"
 	}
+	behavior += "; inspect shows per-step duration, retries, providers, and error classification"
 	return Plan{
-		Task:        task,
-		Mode:        mode,
-		Search:      search,
-		Crawler:     crawler,
-		MCPEndpoint: mcpEndpoint,
-		Steps:       defaultPlanSteps(effectiveSearch, crawler),
-		Providers:   providers,
-		Behavior:    behavior,
-		RunIDHint:   runHint,
+		Task:          task,
+		Mode:          mode,
+		Search:        search,
+		Crawler:       crawler,
+		MCPEndpoint:   mcpEndpoint,
+		Steps:         defaultPlanSteps(effectiveSearch, crawler),
+		Providers:     providers,
+		Behavior:      behavior,
+		RunIDHint:     runHint,
+		Observability: defaultObservabilityPlan(),
 	}
 }

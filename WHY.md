@@ -1,35 +1,35 @@
-# WHY — Phase 2: feat/search-provider
+# WHY — Phase 3: feat/observability
 
 ## Problem
 
-Search was hard-coded to mock. The README roadmap promised a real provider, but `run` could not demonstrate live URL discovery — weakening portfolio signal for “web-aware execution.”
+Tracer data was persisted as opaque `logs` but **never surfaced** in `inspect` or `explain`. Hiring managers could not see per-step duration, retries, or error types without reading raw JSON files.
 
 ## Solution
 
-- `SearchProvider` factory: `mock` (default) and `http` (DuckDuckGo Instant Answer API)
-- Timeouts and retry-friendly HTTP errors (429, 5xx) aligned with crawl layer
-- `--search` flag on `run` and `explain`
-- Deterministic mode forces `mock` search for reproducibility
+- Structured `step_logs` on every run (duration, retries, provider, status, error_class)
+- `classified_errors` with stable taxonomy (rate_limit, timeout, server_error, …)
+- Per-step retry counts (delta per step, not cumulative)
+- Rich `inspect` JSON/markdown and `explain` observability section
+- Legacy `logs` field still loads into `step_logs`
 
 ## Alternatives rejected
 
 | Alternative | Why rejected |
 |-------------|--------------|
-| Google/Bing APIs | Require API keys; bad OSS onboarding |
-| HTML scraping SERPs | Fragile, high maintenance |
-| New command `search` | Breaks “run unchanged” contract |
-| Real search in deterministic mode | Breaks stable run IDs / outputs |
+| Separate `agentbridge logs` command | Extra surface; inspect is the observability command |
+| OpenTelemetry export | Phase 4+ scope; violates “no dashboards” |
+| Drop plain `errors` array | Breaks existing scripts; keep both |
 
 ## Tradeoffs
 
 | Choice | Benefit | Cost |
 |--------|---------|------|
-| DuckDuckGo API | No key, legal lightweight API | Result quality varies |
-| Force mock in deterministic | Tests stay stable | `--search http` ignored in deterministic mode |
-| Cap 10 results | Bounded crawl load | May drop relevant hits |
+| Error classification by message heuristics | No new deps | Imperfect taxonomy |
+| Dual errors + classified_errors | Backward compatible | Slight redundancy |
+| Markdown table for steps | Readable inspect | Wide terminal output |
 
 ## Expected impact
 
-- Demonstrates provider abstraction end-to-end
-- `run` UX unchanged (new optional flag only)
-- Clear path to swap in other APIs later
+- `inspect` demonstrates reliability thinking clearly
+- `explain` sets expectations before execution
+- Foundation for Phase 4 benchmarks without new commands

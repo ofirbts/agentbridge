@@ -20,6 +20,12 @@ func TestRunTaskSuccess(t *testing.T) {
 	if len(record.Steps) != 4 {
 		t.Fatalf("expected 4 steps, got %d", len(record.Steps))
 	}
+	if len(record.StepLogs) == 0 {
+		t.Fatal("expected step_logs on run record")
+	}
+	if record.Search != "mock" {
+		t.Fatalf("expected search provider mock, got %s", record.Search)
+	}
 }
 
 func TestDeterministicSameInputsSameOutputs(t *testing.T) {

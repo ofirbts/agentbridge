@@ -39,19 +39,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `step_logs` on runs: per-step duration, retries, provider, status, error_class
+- `classified_errors` with taxonomy (rate_limit, timeout, server_error, …)
+- `explain` observability section; `inspect` providers map in JSON
+- Legacy run files with `logs` field load into `step_logs`
 - `--search` flag: `mock` (default) or `http` (DuckDuckGo Instant Answer API)
-- `internal/search` HTTP provider with timeouts and retry-friendly errors
-- `examples/search_http.sh`
+- `internal/search` HTTP provider; `examples/search_http.sh`
 
 ### Changed
 
 - Deterministic mode always uses mock search
-- `explain` plan includes search provider in steps and providers list
+- Per-step retry counts (not cumulative) in step logs
 - Docs: DECISION.md and INFRA-NOTES.md reflect MCP HTTP and search providers
 
 ### Planned
 
-- Richer inspect output (step logs, error classes)
-- Benchmarks and performance notes
+- Benchmarks and performance notes (Phase 4)
 
 [0.1.0]: https://github.com/ofirbts/agentbridge/releases/tag/v0.1.0

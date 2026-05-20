@@ -29,7 +29,7 @@ var inspectCmd = &cobra.Command{
 
 		encoder := json.NewEncoder(cmd.OutOrStdout())
 		encoder.SetIndent("", "  ")
-		return encoder.Encode(record)
+		return encoder.Encode(output.FormatInspect(record))
 	},
 }
 

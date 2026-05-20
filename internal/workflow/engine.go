@@ -77,6 +77,8 @@ func (e *Engine) RunTask(task string) (*run.Run, error) {
 	record := &run.Run{
 		Status:  "running",
 		ID:      runID,
+		Mode:    e.cfg.Mode,
+		Search:  e.search.Name(),
 		Steps:   DefaultSteps(),
 		Errors:  []string{},
 		Crawler: e.crawler.Name(),
@@ -95,7 +97,7 @@ func (e *Engine) RunTask(task string) (*run.Run, error) {
 		tools, err := e.mcp.ListTools(ctx)
 		cancel()
 		if err != nil {
-			record.Errors = append(record.Errors, err.Error())
+			appendRunError(record, "mcp", err)
 		} else if len(tools) > 0 {
 			mcpPreview = tools[0]
 			recorder.AddStep("mcp", "listed tools: "+tools[0])
@@ -103,15 +105,15 @@ func (e *Engine) RunTask(task string) (*run.Run, error) {
 	}
 
 	searchStart := time.Now()
+	retriesBefore := e.policy.RetriesDone()
 	searchErr = failure.RetryWithPolicy(e.policy, func() error {
 		var err error
 		searchResults, err = e.search.Search(task)
 		return err
 	})
-	recorder.AddStepWithMeta("search", statusFor(searchErr), e.search.Name(), task, int(e.policy.RetriesDone()), time.Since(searchStart).Milliseconds())
-	if searchErr != nil {
-		record.Errors = append(record.Errors, searchErr.Error())
-	}
+	searchRetries := int(e.policy.RetriesDone() - retriesBefore)
+	recorder.AddStepWithMeta("search", statusFor(searchErr), e.search.Name(), task, searchRetries, time.Since(searchStart).Milliseconds())
+	appendRunError(record, "search", searchErr)
 
 	url := "https://example.com"
 	if len(searchResults) > 0 {
@@ -119,23 +121,21 @@ func (e *Engine) RunTask(task string) (*run.Run, error) {
 	}
 
 	crawlStart := time.Now()
+	retriesBefore = e.policy.RetriesDone()
 	crawlErr = failure.RetryWithPolicy(e.policy, func() error {
 		var err error
 		page, err = e.crawler.Fetch(url)
 		return err
 	})
-	recorder.AddStepWithMeta("crawl", statusFor(crawlErr), e.crawler.Name(), url, int(e.policy.RetriesDone()), time.Since(crawlStart).Milliseconds())
-	if crawlErr != nil {
-		record.Errors = append(record.Errors, crawlErr.Error())
-	}
+	crawlRetries := int(e.policy.RetriesDone() - retriesBefore)
+	recorder.AddStepWithMeta("crawl", statusFor(crawlErr), e.crawler.Name(), url, crawlRetries, time.Since(crawlStart).Milliseconds())
+	appendRunError(record, "crawl", crawlErr)
 
 	extractStart := time.Now()
 	recorder.AddStep("extract", "parsing content")
 	text, extractErr := e.extractor.Extract(page)
 	recorder.AddStepWithMeta("extract", statusFor(extractErr), "extractor", task, 0, time.Since(extractStart).Milliseconds())
-	if extractErr != nil {
-		record.Errors = append(record.Errors, extractErr.Error())
-	}
+	appendRunError(record, "extract", extractErr)
 
 	normalizeStart := time.Now()
 	recorder.AddStep("normalize", "structuring output")
@@ -161,11 +161,19 @@ func (e *Engine) RunTask(task string) (*run.Run, error) {
 
 	record.DurationMS = time.Since(start).Milliseconds()
 	record.Retries = int(e.policy.RetriesDone())
-	record.Logs = e.tracer.Logs()
+	record.StepLogs = run.StepLogsFromTracer(e.tracer.Logs())
 
 	_ = e.runs.Insert(runID, record)
 
 	return record, firstError(searchErr, crawlErr, extractErr)
+}
+
+func appendRunError(record *run.Run, step string, err error) {
+	if err == nil {
+		return
+	}
+	record.Errors = append(record.Errors, err.Error())
+	record.ClassifiedErrors = append(record.ClassifiedErrors, run.NewClassifiedError(step, err))
 }
 
 func statusFor(err error) string {

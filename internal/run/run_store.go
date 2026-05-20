@@ -47,9 +47,20 @@ func (s *RunStore) Get(id string) (*Run, error) {
 	if err != nil {
 		return nil, fmt.Errorf("run %q not found: %w", id, err)
 	}
-	var r Run
-	if err := json.Unmarshal(data, &r); err != nil {
+	return decodeRun(data)
+}
+
+func decodeRun(data []byte) (*Run, error) {
+	var aux struct {
+		Run
+		LegacyLogs []StepLog `json:"logs"`
+	}
+	if err := json.Unmarshal(data, &aux); err != nil {
 		return nil, err
+	}
+	r := aux.Run
+	if len(r.StepLogs) == 0 && len(aux.LegacyLogs) > 0 {
+		r.StepLogs = aux.LegacyLogs
 	}
 	return &r, nil
 }
