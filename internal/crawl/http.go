@@ -15,7 +15,7 @@ type HTTPOptions struct {
 func DefaultHTTPOptions() HTTPOptions {
 	return HTTPOptions{
 		Timeout:   15 * time.Second,
-		UserAgent: "AgentBridge/0.2 (+https://github.com/yourname/agentbridge)",
+		UserAgent: "AgentBridge/0.2 (+https://github.com/ofirbts/agentbridge)",
 	}
 }
 

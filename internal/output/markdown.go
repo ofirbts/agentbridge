@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/yourname/agentbridge/internal/workflow"
+	"github.com/ofirbts/agentbridge/internal/workflow"
 )
 
 func FormatMarkdown(r *workflow.Result) string {

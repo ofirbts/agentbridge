@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/yourname/agentbridge/internal/observability"
+	"github.com/ofirbts/agentbridge/internal/observability"
 )
 
 func FormatStepLogs(logs []observability.StepLog) string {

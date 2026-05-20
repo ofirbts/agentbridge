@@ -3,7 +3,7 @@ package output
 import (
 	"testing"
 
-	"github.com/yourname/agentbridge/internal/workflow"
+	"github.com/ofirbts/agentbridge/internal/workflow"
 )
 
 func TestFormatRunResult(t *testing.T) {

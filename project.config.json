@@ -2,7 +2,7 @@
   "name": "agentbridge",
   "version": "0.2.0",
   "language": "go",
-  "module": "github.com/yourname/agentbridge",
+  "module": "github.com/ofirbts/agentbridge",
   "workflow": {
     "small_task": ["developer", "strict-reviewer"],
     "large_task": ["architect", "developer", "strict-reviewer"],
@@ -25,6 +25,12 @@
     "e2e": "make e2e",
     "dev": "make dev"
   },
+  "pr3_scope": [
+    "pkg/mcp/http.go",
+    "pkg/mcp/factory.go",
+    "cmd mcp-transport flag",
+    "module github.com/ofirbts/agentbridge"
+  ],
   "pr2_scope": [
     "cmd run/explain/inspect/simulate-failure enhancements",
     "internal/crawl/http.go",

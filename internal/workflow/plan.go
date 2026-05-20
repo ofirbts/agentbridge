@@ -1,5 +1,7 @@
 package workflow
 
+import "github.com/ofirbts/agentbridge/pkg/mcp"
+
 type PlanStep struct {
 	Name        string `json:"name"`
 	Provider    string `json:"provider"`
@@ -30,7 +32,7 @@ func defaultPlanSteps(crawler string) []PlanStep {
 	}
 }
 
-func ExplainPlan(task, mode, crawler, mcpEndpoint string) Plan {
+func ExplainPlan(task, mode, crawler, mcpEndpoint, mcpTransport string) Plan {
 	if crawler == "" {
 		crawler = "mock"
 	}
@@ -42,8 +44,12 @@ func ExplainPlan(task, mode, crawler, mcpEndpoint string) Plan {
 	}
 	providers := []string{"mock_search", crawler + "_crawler", "extractor", "normalizer"}
 	if mcpEndpoint != "" {
-		providers = append(providers, "mcp_stub")
-		behavior += "; MCP stub available for future tool-backed providers"
+		transport := mcpTransport
+		if transport == "" {
+			transport = mcp.DefaultTransport(mcpEndpoint)
+		}
+		providers = append(providers, "mcp_"+transport)
+		behavior += "; MCP " + transport + " transport for tool-backed providers"
 	}
 	return Plan{
 		Task:        task,
@@ -58,5 +64,5 @@ func ExplainPlan(task, mode, crawler, mcpEndpoint string) Plan {
 }
 
 func BuildPlan(task string) Plan {
-	return ExplainPlan(task, "normal", "mock", "")
+	return ExplainPlan(task, "normal", "mock", "", "")
 }

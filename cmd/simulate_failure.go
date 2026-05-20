@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/yourname/agentbridge/internal/failure"
+	"github.com/ofirbts/agentbridge/internal/failure"
 )
 
 var simulateFailureCmd = &cobra.Command{

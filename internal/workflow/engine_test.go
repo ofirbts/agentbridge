@@ -40,7 +40,7 @@ func TestDeterministicSameInputsSameOutputs(t *testing.T) {
 }
 
 func TestExplainPlanDeterministic(t *testing.T) {
-	plan := ExplainPlan("task", "deterministic", "mock", "")
+	plan := ExplainPlan("task", "deterministic", "mock", "", "")
 	if plan.Mode != "deterministic" {
 		t.Fatalf("expected deterministic mode")
 	}
@@ -51,9 +51,10 @@ func TestExplainPlanDeterministic(t *testing.T) {
 
 func TestEngineWithMCPEndpoint(t *testing.T) {
 	engine := NewEngine(Config{
-		Mode:        "normal",
-		StorePath:   t.TempDir(),
-		MCPEndpoint: "http://localhost:8080/mcp",
+		Mode:         "normal",
+		StorePath:    t.TempDir(),
+		MCPEndpoint:  "http://localhost:8080/mcp",
+		MCPTransport: "stub",
 	})
 	result, err := engine.RunTask("mcp task")
 	if err != nil {

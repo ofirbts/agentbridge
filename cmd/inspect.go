@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/yourname/agentbridge/internal/output"
-	"github.com/yourname/agentbridge/internal/run"
-	"github.com/yourname/agentbridge/internal/workflow"
+	"github.com/ofirbts/agentbridge/internal/output"
+	"github.com/ofirbts/agentbridge/internal/run"
+	"github.com/ofirbts/agentbridge/internal/workflow"
 )
 
 var inspectCmd = &cobra.Command{

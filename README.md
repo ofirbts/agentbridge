@@ -54,7 +54,7 @@ CLI (Cobra)
 ## Installation
 
 ```bash
-git clone https://github.com/yourname/agentbridge
+git clone https://github.com/ofirbts/agentbridge
 cd agentbridge
 make build
 ./agentbridge --help

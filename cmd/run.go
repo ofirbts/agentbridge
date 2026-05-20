@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 
 	"github.com/spf13/cobra"
-	"github.com/yourname/agentbridge/internal/output"
-	"github.com/yourname/agentbridge/internal/workflow"
+	"github.com/ofirbts/agentbridge/internal/output"
+	"github.com/ofirbts/agentbridge/internal/workflow"
 )
 
 var runCmd = &cobra.Command{
@@ -19,13 +19,15 @@ var runCmd = &cobra.Command{
 		storePath, _ := cmd.Flags().GetString("store")
 		crawler, _ := cmd.Flags().GetString("crawler")
 		mcpEndpoint, _ := cmd.Flags().GetString("mcp-endpoint")
+		mcpTransport, _ := cmd.Flags().GetString("mcp-transport")
 
 		engine := workflow.NewEngine(workflow.Config{
-			Mode:        mode,
-			ConfigFile:  cfg,
-			StorePath:   storePath,
-			Crawler:     crawler,
-			MCPEndpoint: mcpEndpoint,
+			Mode:         mode,
+			ConfigFile:   cfg,
+			StorePath:    storePath,
+			Crawler:      crawler,
+			MCPEndpoint:  mcpEndpoint,
+			MCPTransport: mcpTransport,
 		})
 		result, err := engine.RunTask(task)
 		if err != nil && result == nil {
@@ -55,7 +57,8 @@ func init() {
 	runCmd.Flags().String("config", "", "config file path (JSON)")
 	runCmd.Flags().String("store", ".agentbridge/runs", "run store directory")
 	runCmd.Flags().String("crawler", "mock", "crawler provider (mock, http)")
-	runCmd.Flags().String("mcp-endpoint", "", "MCP server endpoint (stub client)")
+	runCmd.Flags().String("mcp-endpoint", "", "MCP server endpoint URL")
+	runCmd.Flags().String("mcp-transport", "", "MCP transport (http, stub); default http for http(s) endpoints")
 	runCmd.Flags().String("format", "json", "output format (json, markdown)")
 	rootCmd.AddCommand(runCmd)
 }

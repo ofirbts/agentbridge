@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/yourname/agentbridge/internal/workflow"
+	"github.com/ofirbts/agentbridge/internal/workflow"
 )
 
 var explainCmd = &cobra.Command{
@@ -22,7 +22,8 @@ var explainCmd = &cobra.Command{
 		mode, _ := cmd.Flags().GetString("mode")
 		crawler, _ := cmd.Flags().GetString("crawler")
 		mcpEndpoint, _ := cmd.Flags().GetString("mcp-endpoint")
-		plan := workflow.ExplainPlan(task, mode, crawler, mcpEndpoint)
+		mcpTransport, _ := cmd.Flags().GetString("mcp-transport")
+		plan := workflow.ExplainPlan(task, mode, crawler, mcpEndpoint, mcpTransport)
 
 		format, _ := cmd.Flags().GetString("format")
 		if format == "text" {
@@ -41,7 +42,8 @@ func init() {
 	explainCmd.Flags().String("task", "", "task to explain")
 	explainCmd.Flags().StringP("mode", "m", "normal", "execution mode (normal, deterministic)")
 	explainCmd.Flags().String("crawler", "mock", "crawler provider (mock, http)")
-	explainCmd.Flags().String("mcp-endpoint", "", "MCP server endpoint (stub client)")
+	explainCmd.Flags().String("mcp-endpoint", "", "MCP server endpoint URL")
+	explainCmd.Flags().String("mcp-transport", "", "MCP transport (http, stub)")
 	explainCmd.Flags().String("format", "json", "output format (json, text)")
 	rootCmd.AddCommand(explainCmd)
 }

@@ -4,21 +4,22 @@ import (
 	"context"
 	"time"
 
-	"github.com/yourname/agentbridge/internal/crawl"
-	"github.com/yourname/agentbridge/internal/extract"
-	"github.com/yourname/agentbridge/internal/failure"
-	"github.com/yourname/agentbridge/internal/observability"
-	"github.com/yourname/agentbridge/internal/run"
-	"github.com/yourname/agentbridge/internal/search"
-	"github.com/yourname/agentbridge/pkg/mcp"
+	"github.com/ofirbts/agentbridge/internal/crawl"
+	"github.com/ofirbts/agentbridge/internal/extract"
+	"github.com/ofirbts/agentbridge/internal/failure"
+	"github.com/ofirbts/agentbridge/internal/observability"
+	"github.com/ofirbts/agentbridge/internal/run"
+	"github.com/ofirbts/agentbridge/internal/search"
+	"github.com/ofirbts/agentbridge/pkg/mcp"
 )
 
 type Config struct {
 	Mode        string
 	ConfigFile  string
 	StorePath   string
-	Crawler     string
-	MCPEndpoint string
+	Crawler      string
+	MCPEndpoint  string
+	MCPTransport string
 }
 
 type Engine struct {
@@ -36,7 +37,14 @@ type Engine struct {
 func NewEngine(cfg Config) *Engine {
 	var mcpClient mcp.Client
 	if cfg.MCPEndpoint != "" {
-		mcpClient = mcp.NewStubClient(cfg.MCPEndpoint)
+		transport := cfg.MCPTransport
+		if transport == "" {
+			transport = mcp.DefaultTransport(cfg.MCPEndpoint)
+		}
+		client, err := mcp.NewClient(cfg.MCPEndpoint, transport)
+		if err == nil {
+			mcpClient = client
+		}
 	}
 	return &Engine{
 		cfg:        cfg,
@@ -97,7 +105,7 @@ func (e *Engine) RunTask(task string) (*Result, error) {
 			result.Errors = append(result.Errors, err.Error())
 		} else if len(tools) > 0 {
 			mcpPreview = tools[0]
-			recorder.AddStep("mcp", "listed stub tools: "+tools[0])
+			recorder.AddStep("mcp", "listed tools: "+tools[0])
 		}
 	}
 

@@ -1,4 +1,4 @@
-module github.com/yourname/agentbridge
+module github.com/ofirbts/agentbridge
 
 go 1.23
 

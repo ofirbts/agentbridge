@@ -1,6 +1,6 @@
 package output
 
-import "github.com/yourname/agentbridge/internal/workflow"
+import "github.com/ofirbts/agentbridge/internal/workflow"
 
 func FormatRunResult(r *workflow.Result) map[string]any {
 	if r == nil {

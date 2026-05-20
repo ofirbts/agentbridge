@@ -14,7 +14,7 @@ type MockProvider struct {
 func NewMockProvider() *MockProvider {
 	return &MockProvider{
 		Results: []Result{
-			{Title: "AgentBridge", URL: "https://example.com/agentbridge", Snippet: "execution layer for web agents"},
+			{Title: "AgentBridge", URL: "https://example.com", Snippet: "execution layer for web agents"},
 			{Title: "AI Infra Startups", URL: "https://example.com/ai-infra", Snippet: "reliable web workflows"},
 		},
 	}

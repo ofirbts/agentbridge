@@ -1,6 +1,6 @@
 package main
 
-import "github.com/yourname/agentbridge/cmd"
+import "github.com/ofirbts/agentbridge/cmd"
 
 func main() {
 	cmd.Execute()
