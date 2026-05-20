@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/spf13/cobra"
 	"github.com/ofirbts/agentbridge/internal/workflow"
+	"github.com/spf13/cobra"
 )
 
 var explainCmd = &cobra.Command{

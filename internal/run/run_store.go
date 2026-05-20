@@ -9,9 +9,9 @@ import (
 )
 
 type RunStore struct {
-	dir  string
-	mu   sync.RWMutex
-	mem  map[string]*Run
+	dir string
+	mu  sync.RWMutex
+	mem map[string]*Run
 }
 
 func NewRunStore(dir string) *RunStore {

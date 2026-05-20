@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/spf13/cobra"
 	"github.com/ofirbts/agentbridge/internal/failure"
+	"github.com/spf13/cobra"
 )
 
 var simulateFailureCmd = &cobra.Command{

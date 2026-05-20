@@ -9,14 +9,14 @@ type PlanStep struct {
 }
 
 type Plan struct {
-	Task       string     `json:"task"`
-	Mode       string     `json:"mode"`
-	Crawler    string     `json:"crawler"`
-	MCPEndpoint string    `json:"mcp_endpoint,omitempty"`
-	Steps      []PlanStep `json:"steps"`
-	Providers  []string   `json:"providers"`
-	Behavior   string     `json:"expected_behavior"`
-	RunIDHint  string     `json:"run_id_hint,omitempty"`
+	Task        string     `json:"task"`
+	Mode        string     `json:"mode"`
+	Crawler     string     `json:"crawler"`
+	MCPEndpoint string     `json:"mcp_endpoint,omitempty"`
+	Steps       []PlanStep `json:"steps"`
+	Providers   []string   `json:"providers"`
+	Behavior    string     `json:"expected_behavior"`
+	RunIDHint   string     `json:"run_id_hint,omitempty"`
 }
 
 func DefaultSteps() []string {

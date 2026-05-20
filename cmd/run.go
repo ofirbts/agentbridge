@@ -3,9 +3,9 @@ package cmd
 import (
 	"encoding/json"
 
-	"github.com/spf13/cobra"
 	"github.com/ofirbts/agentbridge/internal/output"
 	"github.com/ofirbts/agentbridge/internal/workflow"
+	"github.com/spf13/cobra"
 )
 
 var runCmd = &cobra.Command{

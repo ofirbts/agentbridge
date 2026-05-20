@@ -14,9 +14,9 @@ import (
 )
 
 type Config struct {
-	Mode        string
-	ConfigFile  string
-	StorePath   string
+	Mode         string
+	ConfigFile   string
+	StorePath    string
 	Crawler      string
 	MCPEndpoint  string
 	MCPTransport string
@@ -68,7 +68,7 @@ type Result struct {
 	RunID      string   `json:"run_id"`
 	Crawler    string   `json:"crawler"`
 	MCP        string   `json:"mcp_endpoint,omitempty"`
-	Result     any        `json:"result"`
+	Result     any      `json:"result"`
 }
 
 func (e *Engine) RunTask(task string) (*Result, error) {

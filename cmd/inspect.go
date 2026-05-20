@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/spf13/cobra"
 	"github.com/ofirbts/agentbridge/internal/output"
 	"github.com/ofirbts/agentbridge/internal/run"
 	"github.com/ofirbts/agentbridge/internal/workflow"
+	"github.com/spf13/cobra"
 )
 
 var inspectCmd = &cobra.Command{
