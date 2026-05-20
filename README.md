@@ -1,71 +1,30 @@
 # AgentBridge
 
-**A production-grade CLI for reliable AI agent web workflows in Go**
+[![CI](https://github.com/ofirbts/agentbridge/actions/workflows/ci.yml/badge.svg)](https://github.com/ofirbts/agentbridge/actions/workflows/ci.yml)
+[![Go](https://img.shields.io/badge/go-1.23+-blue.svg)](https://go.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> AI agents are easy to build. Making them reliable in the real web is not.
+**Reliable web execution for AI agents — in Go, as a CLI.**
 
-AgentBridge is a thin execution layer that makes web agents predictable, observable, and production-aware.
-It is not an agent framework, but a **reliability + execution layer** between your agent logic and the web.
+AgentBridge is a thin layer between your agent logic and the web: retries, structured runs, deterministic mode, and pluggable providers. Not a framework. Not a scraper. An **execution reliability** tool.
 
-## Why this exists
+---
 
-The web is:
+## Problem
 
-- unstable
-- rate-limited
-- blocked
-- inconsistent
-- non-deterministic
+AI agents break on real web work: rate limits, blocked pages, flaky HTML, non-deterministic tools. Frameworks focus on prompts and tools; they under-invest in **durable execution**.
 
-Most agent frameworks ignore this reality.
+AgentBridge owns the web step: search → crawl → extract → normalize, with observability you can inspect after the fact.
 
-AgentBridge sits between your agent and the web, handling:
+---
 
-- retries + backoff
-- observability + structured logs
-- deterministic execution mode
-- failure simulation
-- mockable providers
-
-**Core idea:** Agents should not care about the web. The execution layer should.
-
-## Features
-
-- CLI-first architecture (Go + Cobra)
-- Deterministic execution mode (`--mode deterministic`)
-- Retry + fallback system
-- Structured logs + tracing
-- Pluggable providers (Search / Crawl / Extract)
-- Failure simulation mode (`agentbridge simulate-failure`)
-- Run-based observability (`agentbridge inspect <run-id>`)
-
-## Architecture
-
-```
-CLI (Cobra)
-└→ Workflow Engine (execution planner)
-   ├→ Search Layer (mock/API)
-   ├→ Crawl Layer (fetch)
-   ├→ Extract + Normalize
-   └→ Output Layer (JSON / Markdown / Logs)
-      └→ Observability Layer (retries, tracing)
-```
-
-## Installation
+## Demo (30 seconds)
 
 ```bash
 git clone https://github.com/ofirbts/agentbridge
 cd agentbridge
 make build
-./agentbridge --help
-```
-
-## Usage
-
-### Run a task
-
-```bash
-agentbridge run --mode normal "find top AI infra startups"
+./agentbridge run "find top AI infra startups" --mode deterministic
 ```
 
 Example output:
@@ -73,60 +32,157 @@ Example output:
 ```json
 {
   "status": "success",
+  "run_id": "run_det_a95533ac",
+  "crawler": "mock",
   "steps": ["search", "crawl", "extract", "normalize"],
   "retries": 0,
-  "duration_ms": 3200,
-  "run_id": "run_abc12345",
-  "result": {}
+  "duration_ms": 0,
+  "result": {
+    "query": "find top AI infra startups",
+    "url": "https://example.com",
+    "hits": 2,
+    "normalized": { "text": "AgentBridge mock page", "word_count": 3 }
+  }
 }
 ```
 
-### Explain execution plan
+Inspect the same run:
 
 ```bash
-agentbridge explain --task "find top AI infra startups"
+./agentbridge inspect run_det_a95533ac --format markdown
 ```
 
-### Inspect execution
+```
+# Run run_det_a95533ac
+
+- Status: success
+- Crawler: mock
+- Duration: 0ms
+- Retries: 0
+
+## Steps
+
+- search
+- crawl
+- extract
+- normalize
+```
+
+---
+
+## Quick start
+
+| Requirement | Version |
+|-------------|---------|
+| Go | 1.23+ |
 
 ```bash
-agentbridge inspect run_abc12345
+make build
+make test
+./agentbridge --help
 ```
 
-### Simulate failure conditions
+Common commands:
 
 ```bash
-agentbridge simulate-failure --seed 42 --count 3
+./agentbridge run "your task" --mode deterministic
+./agentbridge run "your task" --crawler http
+./agentbridge explain --task "your task"
+./agentbridge simulate-failure --seed 42 --count 3
 ```
 
-### HTTP crawler + MCP stub
+---
+
+## Architecture
+
+```mermaid
+flowchart TB
+  CLI[Cobra CLI] --> Engine[Workflow Engine]
+  Engine --> Search[SearchProvider]
+  Engine --> Crawl[Crawler mock/http]
+  Engine --> Extract[Extract + Normalize]
+  Engine --> MCP[MCP stub/http]
+  Engine --> Store[(Run store .agentbridge/runs)]
+  Engine --> Trace[Tracer / step logs]
+  CLI --> Out[JSON / Markdown output]
+```
+
+| Layer | Role |
+|-------|------|
+| **CLI** | `run`, `explain`, `inspect`, `simulate-failure` |
+| **Engine** | Orchestration, retries, deterministic mode |
+| **Providers** | Swappable search / crawl / MCP |
+| **Run store** | Persist runs for `inspect` across invocations |
+
+---
+
+## Commands
+
+| Command | Purpose |
+|---------|---------|
+| `run` | Execute search → crawl → extract → normalize |
+| `explain` | Show planned steps and providers (no execution) |
+| `inspect` | Load a stored run by `run_id` |
+| `simulate-failure` | Test retry behavior with injected failures |
+
+### `run` flags
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--mode` | `normal` | `normal` or `deterministic` |
+| `--crawler` | `mock` | `mock` or `http` |
+| `--mcp-endpoint` | — | MCP server URL (optional) |
+| `--mcp-transport` | auto | `http` or `stub` |
+| `--store` | `.agentbridge/runs` | Run persistence directory |
+| `--format` | `json` | `json` or `markdown` |
+
+---
+
+## Design decisions
+
+1. **Execution over abstraction** — predictable pipelines, not agent personas.
+2. **Observability first** — every run gets an ID and stored record.
+3. **Failure is default** — retries and simulation are first-class.
+4. **Mocks before integrations** — fast CI, clear contracts; swap providers later.
+
+Details: [docs/DECISION.md](docs/DECISION.md) · [docs/RULES.md](docs/RULES.md) · [docs/INFRA-NOTES.md](docs/INFRA-NOTES.md)
+
+---
+
+## Examples
 
 ```bash
-agentbridge run "find top AI infra startups" --crawler http
-agentbridge run "mcp backed task" --mcp-endpoint http://localhost:8080/mcp
-agentbridge explain --task "plan with http" --crawler http
-agentbridge inspect run_abc12345 --format markdown
+./examples/ai_infra_search.sh
+./examples/rag_task.sh
+./examples/simulate_then_fix.sh
 ```
 
-## Design Principles
+HTTP crawl against a real URL:
 
-1. **Execution over abstraction** — predictable execution over abstract frameworks
-2. **Observability first** — every action is traceable
-3. **Failure is default** — the web is unreliable; assume failure
-4. **Minimal surface area** — small interfaces, replaceable components
+```bash
+./agentbridge run "task" --crawler http
+```
 
-## Use Cases
+MCP (offline stub):
 
-- AI agents with web browsing capability
-- RAG pipelines with external context
-- Data extraction workflows
-- AI orchestration systems
+```bash
+./agentbridge run "task" --mcp-endpoint http://localhost:8080/mcp --mcp-transport stub
+```
 
-## Docs
+---
 
-- [DECISION.md](docs/DECISION.md) — why execution layer, not framework
-- [RULES.md](docs/RULES.md) — deterministic mode guarantees
-- [INFRA-NOTES.md](docs/INFRA-NOTES.md) — AI infra / MCP fit
+## Roadmap
+
+| Version | Focus |
+|---------|--------|
+| **v0.1.0** | CLI, mocks, HTTP crawler, MCP HTTP, docs (current) |
+| v0.2.x | Real search provider |
+| v0.3.x | Richer inspect / observability |
+| v1.x | Open-source packaging, benchmarks, examples |
+
+See [CHANGELOG.md](CHANGELOG.md).
+
+---
 
 ## Development
 
@@ -134,25 +190,13 @@ agentbridge inspect run_abc12345 --format markdown
 make build
 make test
 make e2e
-make dev
+make lint
 ```
 
-## Contributing
+Contributions: [CONTRIBUTING.md](CONTRIBUTING.md)
 
-PRs welcome for:
+---
 
-- new providers (web-search APIs, browser-automation backends)
-- metrics exporters
-- better retries / observability
-- docs
+## License
 
-## Cursor Workflow
-
-This repo includes `.cursor/` agents, rules, and skills from `project-starter`:
-
-1. `architect` — plan large changes
-2. `developer` — implement + tests
-3. `strict-reviewer` — review before commit
-4. `debugger` — root-cause failures
-
-See `project.config.json` for the workflow map.
+MIT — see [LICENSE](LICENSE).
