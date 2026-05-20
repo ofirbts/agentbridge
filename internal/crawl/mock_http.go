@@ -16,7 +16,7 @@ func NewMockCrawler() *MockCrawler {
 }
 
 func (m *MockCrawler) Name() string {
-	return "mock_http"
+	return "mock"
 }
 
 func (m *MockCrawler) Fetch(url string) ([]byte, error) {

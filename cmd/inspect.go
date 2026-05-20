@@ -6,7 +6,6 @@ import (
 
 	"github.com/ofirbts/agentbridge/internal/output"
 	"github.com/ofirbts/agentbridge/internal/run"
-	"github.com/ofirbts/agentbridge/internal/workflow"
 	"github.com/spf13/cobra"
 )
 
@@ -24,18 +23,7 @@ var inspectCmd = &cobra.Command{
 		}
 
 		if format == "markdown" {
-			wf := &workflow.Result{
-				Status:     record.Status,
-				Steps:      record.Steps,
-				Errors:     record.Errors,
-				Retries:    record.Retries,
-				DurationMS: record.DurationMS,
-				RunID:      record.ID,
-				Crawler:    record.Crawler,
-				MCP:        record.MCP,
-				Result:     record.Result,
-			}
-			_, err := cmd.OutOrStdout().Write([]byte(output.FormatMarkdown(wf)))
+			_, err := cmd.OutOrStdout().Write([]byte(output.FormatMarkdown(record)))
 			return err
 		}
 

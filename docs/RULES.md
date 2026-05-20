@@ -26,9 +26,17 @@ When `--mode deterministic`:
 
 - `Fetch(url string) ([]byte, error)`
 - must surface fetch errors to the engine retry loop
+- `mock` — local HTML fixture
+- `http` — real HTTP fetch with timeout and retry-friendly errors
+
+### MCP
+
+- `--mcp-endpoint` optional
+- `--mcp-transport` `http` (JSON-RPC) or `stub` (offline)
+- default transport for `http(s)` endpoints is `http`
 
 ## Non-goals (current version)
 
-- no guarantee of real web fidelity (mocks only)
+- no guarantee of real search fidelity (mock search by default)
 - no cross-run memory beyond stored run records
 - no automatic commit or deploy behavior

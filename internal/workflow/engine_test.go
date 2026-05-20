@@ -6,16 +6,19 @@ import (
 )
 
 func TestRunTaskSuccess(t *testing.T) {
-	engine := NewEngine(Config{Mode: "normal", StorePath: t.TempDir()})
-	result, err := engine.RunTask("find top AI infra startups")
+	engine, err := NewEngine(Config{Mode: "normal", StorePath: t.TempDir()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	record, err := engine.RunTask("find top AI infra startups")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if result.Status != "success" {
-		t.Fatalf("expected success, got %s", result.Status)
+	if record.Status != "success" {
+		t.Fatalf("expected success, got %s", record.Status)
 	}
-	if len(result.Steps) != 4 {
-		t.Fatalf("expected 4 steps, got %d", len(result.Steps))
+	if len(record.Steps) != 4 {
+		t.Fatalf("expected 4 steps, got %d", len(record.Steps))
 	}
 }
 
@@ -23,19 +26,27 @@ func TestDeterministicSameInputsSameOutputs(t *testing.T) {
 	task := "find top AI infra startups"
 	dir := t.TempDir()
 
-	first, err := NewEngine(Config{Mode: "deterministic", StorePath: dir}).RunTask(task)
+	first, err := NewEngine(Config{Mode: "deterministic", StorePath: dir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	r1, err := first.RunTask(task)
 	if err != nil {
 		t.Fatalf("first run: %v", err)
 	}
-	second, err := NewEngine(Config{Mode: "deterministic", StorePath: dir}).RunTask(task)
+	second, err := NewEngine(Config{Mode: "deterministic", StorePath: dir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	r2, err := second.RunTask(task)
 	if err != nil {
 		t.Fatalf("second run: %v", err)
 	}
-	if first.RunID != second.RunID {
-		t.Fatalf("run ids differ: %s vs %s", first.RunID, second.RunID)
+	if r1.ID != r2.ID {
+		t.Fatalf("run ids differ: %s vs %s", r1.ID, r2.ID)
 	}
-	if !reflect.DeepEqual(first.Result, second.Result) {
-		t.Fatalf("results differ:\nfirst: %#v\nsecond: %#v", first.Result, second.Result)
+	if !reflect.DeepEqual(r1.Result, r2.Result) {
+		t.Fatalf("results differ:\nfirst: %#v\nsecond: %#v", r1.Result, r2.Result)
 	}
 }
 
@@ -50,17 +61,30 @@ func TestExplainPlanDeterministic(t *testing.T) {
 }
 
 func TestEngineWithMCPEndpoint(t *testing.T) {
-	engine := NewEngine(Config{
+	engine, err := NewEngine(Config{
 		Mode:         "normal",
 		StorePath:    t.TempDir(),
 		MCPEndpoint:  "http://localhost:8080/mcp",
 		MCPTransport: "stub",
 	})
-	result, err := engine.RunTask("mcp task")
+	if err != nil {
+		t.Fatal(err)
+	}
+	record, err := engine.RunTask("mcp task")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if result.MCP == "" {
+	if record.MCP == "" {
 		t.Fatal("expected mcp endpoint on result")
+	}
+}
+
+func TestNewEngineInvalidMCPTransport(t *testing.T) {
+	_, err := NewEngine(Config{
+		MCPEndpoint:  "http://localhost:8080/mcp",
+		MCPTransport: "invalid",
+	})
+	if err == nil {
+		t.Fatal("expected error for invalid mcp transport")
 	}
 }

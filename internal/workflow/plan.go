@@ -42,7 +42,7 @@ func ExplainPlan(task, mode, crawler, mcpEndpoint, mcpTransport string) Plan {
 		behavior = "stable ordering, fixed run id seed, reproducible mock outputs"
 		runHint = "deterministic run id derived from task hash"
 	}
-	providers := []string{"mock_search", crawler + "_crawler", "extractor", "normalizer"}
+	providers := []string{"mock_search", crawler, "extractor", "normalizer"}
 	if mcpEndpoint != "" {
 		transport := mcpTransport
 		if transport == "" {
@@ -61,8 +61,4 @@ func ExplainPlan(task, mode, crawler, mcpEndpoint, mcpTransport string) Plan {
 		Behavior:    behavior,
 		RunIDHint:   runHint,
 	}
-}
-
-func BuildPlan(task string) Plan {
-	return ExplainPlan(task, "normal", "mock", "", "")
 }

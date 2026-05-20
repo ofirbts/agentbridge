@@ -37,7 +37,7 @@ func TestHTTPCrawlerRateLimit(t *testing.T) {
 }
 
 func TestNewCrawlerFactory(t *testing.T) {
-	if NewCrawler("mock").Name() != "mock_http" {
+	if NewCrawler("mock").Name() != "mock" {
 		t.Fatal("expected mock")
 	}
 	if NewCrawler("http").Name() != "http" {

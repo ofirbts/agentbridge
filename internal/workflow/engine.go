@@ -15,7 +15,6 @@ import (
 
 type Config struct {
 	Mode         string
-	ConfigFile   string
 	StorePath    string
 	Crawler      string
 	MCPEndpoint  string
@@ -34,7 +33,7 @@ type Engine struct {
 	mcp        mcp.Client
 }
 
-func NewEngine(cfg Config) *Engine {
+func NewEngine(cfg Config) (*Engine, error) {
 	var mcpClient mcp.Client
 	if cfg.MCPEndpoint != "" {
 		transport := cfg.MCPTransport
@@ -42,9 +41,10 @@ func NewEngine(cfg Config) *Engine {
 			transport = mcp.DefaultTransport(cfg.MCPEndpoint)
 		}
 		client, err := mcp.NewClient(cfg.MCPEndpoint, transport)
-		if err == nil {
-			mcpClient = client
+		if err != nil {
+			return nil, err
 		}
+		mcpClient = client
 	}
 	return &Engine{
 		cfg:        cfg,
@@ -56,22 +56,10 @@ func NewEngine(cfg Config) *Engine {
 		extractor:  extract.NewExtractor(),
 		normalizer: extract.NewNormalizer(),
 		mcp:        mcpClient,
-	}
+	}, nil
 }
 
-type Result struct {
-	Status     string   `json:"status"`
-	Steps      []string `json:"steps"`
-	Errors     []string `json:"errors"`
-	Retries    int      `json:"retries"`
-	DurationMS int64    `json:"duration_ms"`
-	RunID      string   `json:"run_id"`
-	Crawler    string   `json:"crawler"`
-	MCP        string   `json:"mcp_endpoint,omitempty"`
-	Result     any      `json:"result"`
-}
-
-func (e *Engine) RunTask(task string) (*Result, error) {
+func (e *Engine) RunTask(task string) (*run.Run, error) {
 	start := time.Now()
 	e.policy.Reset()
 
@@ -81,9 +69,9 @@ func (e *Engine) RunTask(task string) (*Result, error) {
 	}
 
 	recorder := e.tracer.StartRun(runID)
-	result := &Result{
+	record := &run.Run{
 		Status:  "running",
-		RunID:   runID,
+		ID:      runID,
 		Steps:   DefaultSteps(),
 		Errors:  []string{},
 		Crawler: e.crawler.Name(),
@@ -102,7 +90,7 @@ func (e *Engine) RunTask(task string) (*Result, error) {
 		tools, err := e.mcp.ListTools(ctx)
 		cancel()
 		if err != nil {
-			result.Errors = append(result.Errors, err.Error())
+			record.Errors = append(record.Errors, err.Error())
 		} else if len(tools) > 0 {
 			mcpPreview = tools[0]
 			recorder.AddStep("mcp", "listed tools: "+tools[0])
@@ -117,7 +105,7 @@ func (e *Engine) RunTask(task string) (*Result, error) {
 	})
 	recorder.AddStepWithMeta("search", statusFor(searchErr), e.search.Name(), task, int(e.policy.RetriesDone()), time.Since(searchStart).Milliseconds())
 	if searchErr != nil {
-		result.Errors = append(result.Errors, searchErr.Error())
+		record.Errors = append(record.Errors, searchErr.Error())
 	}
 
 	url := "https://example.com"
@@ -133,7 +121,7 @@ func (e *Engine) RunTask(task string) (*Result, error) {
 	})
 	recorder.AddStepWithMeta("crawl", statusFor(crawlErr), e.crawler.Name(), url, int(e.policy.RetriesDone()), time.Since(crawlStart).Milliseconds())
 	if crawlErr != nil {
-		result.Errors = append(result.Errors, crawlErr.Error())
+		record.Errors = append(record.Errors, crawlErr.Error())
 	}
 
 	extractStart := time.Now()
@@ -141,7 +129,7 @@ func (e *Engine) RunTask(task string) (*Result, error) {
 	text, extractErr := e.extractor.Extract(page)
 	recorder.AddStepWithMeta("extract", statusFor(extractErr), "extractor", task, 0, time.Since(extractStart).Milliseconds())
 	if extractErr != nil {
-		result.Errors = append(result.Errors, extractErr.Error())
+		record.Errors = append(record.Errors, extractErr.Error())
 	}
 
 	normalizeStart := time.Now()
@@ -152,7 +140,7 @@ func (e *Engine) RunTask(task string) (*Result, error) {
 	}
 	recorder.AddStepWithMeta("normalize", "ok", "normalizer", task, 0, time.Since(normalizeStart).Milliseconds())
 
-	result.Result = map[string]any{
+	record.Result = map[string]any{
 		"query":       task,
 		"url":         url,
 		"normalized":  normalized,
@@ -161,29 +149,18 @@ func (e *Engine) RunTask(task string) (*Result, error) {
 	}
 
 	if searchErr != nil || crawlErr != nil || extractErr != nil {
-		result.Status = "failed"
+		record.Status = "failed"
 	} else {
-		result.Status = "success"
+		record.Status = "success"
 	}
 
-	result.DurationMS = time.Since(start).Milliseconds()
-	result.Retries = int(e.policy.RetriesDone())
+	record.DurationMS = time.Since(start).Milliseconds()
+	record.Retries = int(e.policy.RetriesDone())
+	record.Logs = e.tracer.Logs()
 
-	stored := &run.Run{
-		ID:         runID,
-		Status:     result.Status,
-		Steps:      result.Steps,
-		Errors:     result.Errors,
-		Retries:    result.Retries,
-		DurationMS: result.DurationMS,
-		Result:     result.Result,
-		Logs:       e.tracer.Logs(),
-		Crawler:    result.Crawler,
-		MCP:        result.MCP,
-	}
-	_ = e.runs.Insert(runID, stored)
+	_ = e.runs.Insert(runID, record)
 
-	return result, firstError(searchErr, crawlErr, extractErr)
+	return record, firstError(searchErr, crawlErr, extractErr)
 }
 
 func statusFor(err error) string {

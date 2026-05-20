@@ -14,47 +14,47 @@ var runCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		task := args[0]
-		cfg, _ := cmd.Flags().GetString("config")
 		mode, _ := cmd.Flags().GetString("mode")
 		storePath, _ := cmd.Flags().GetString("store")
 		crawler, _ := cmd.Flags().GetString("crawler")
 		mcpEndpoint, _ := cmd.Flags().GetString("mcp-endpoint")
 		mcpTransport, _ := cmd.Flags().GetString("mcp-transport")
 
-		engine := workflow.NewEngine(workflow.Config{
+		engine, err := workflow.NewEngine(workflow.Config{
 			Mode:         mode,
-			ConfigFile:   cfg,
 			StorePath:    storePath,
 			Crawler:      crawler,
 			MCPEndpoint:  mcpEndpoint,
 			MCPTransport: mcpTransport,
 		})
-		result, err := engine.RunTask(task)
-		if err != nil && result == nil {
+		if err != nil {
 			return err
 		}
-		if result != nil && err != nil {
-			result.Errors = append(result.Errors, err.Error())
-			if result.Status != "failed" {
-				result.Status = "failed"
+		record, err := engine.RunTask(task)
+		if err != nil && record == nil {
+			return err
+		}
+		if record != nil && err != nil {
+			record.Errors = append(record.Errors, err.Error())
+			if record.Status != "failed" {
+				record.Status = "failed"
 			}
 		}
 
 		format, _ := cmd.Flags().GetString("format")
 		if format == "markdown" {
-			_, err := cmd.OutOrStdout().Write([]byte(output.FormatMarkdown(result)))
+			_, err := cmd.OutOrStdout().Write([]byte(output.FormatMarkdown(record)))
 			return err
 		}
 
 		encoder := json.NewEncoder(cmd.OutOrStdout())
 		encoder.SetIndent("", "  ")
-		return encoder.Encode(output.FormatRunResult(result))
+		return encoder.Encode(output.FormatRunResult(record))
 	},
 }
 
 func init() {
 	runCmd.Flags().StringP("mode", "m", "normal", "execution mode (normal, deterministic)")
-	runCmd.Flags().String("config", "", "config file path (JSON)")
 	runCmd.Flags().String("store", ".agentbridge/runs", "run store directory")
 	runCmd.Flags().String("crawler", "mock", "crawler provider (mock, http)")
 	runCmd.Flags().String("mcp-endpoint", "", "MCP server endpoint URL")

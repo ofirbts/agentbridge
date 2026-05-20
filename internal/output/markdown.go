@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ofirbts/agentbridge/internal/workflow"
+	"github.com/ofirbts/agentbridge/internal/run"
 )
 
-func FormatMarkdown(r *workflow.Result) string {
+func FormatMarkdown(r *run.Run) string {
 	var b strings.Builder
-	fmt.Fprintf(&b, "# Run %s\n\n", r.RunID)
+	fmt.Fprintf(&b, "# Run %s\n\n", r.ID)
 	fmt.Fprintf(&b, "- Status: %s\n", r.Status)
 	fmt.Fprintf(&b, "- Crawler: %s\n", r.Crawler)
 	if r.MCP != "" {

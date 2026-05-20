@@ -38,14 +38,3 @@ func (r *Recorder) AddStepWithMeta(step, status, provider, query string, retries
 		Query:      query,
 	})
 }
-
-func (r *Recorder) AddError(step, message string) {
-	r.initStart()
-	r.tracer.logs = append(r.tracer.logs, StepLog{
-		RunID:      r.runID,
-		Step:       step,
-		Status:     "error",
-		DurationMS: time.Since(r.start).Milliseconds(),
-		Message:    message,
-	})
-}

@@ -1,8 +1,8 @@
 package output
 
-import "github.com/ofirbts/agentbridge/internal/workflow"
+import "github.com/ofirbts/agentbridge/internal/run"
 
-func FormatRunResult(r *workflow.Result) map[string]any {
+func FormatRunResult(r *run.Run) map[string]any {
 	if r == nil {
 		return map[string]any{"status": "failed"}
 	}
@@ -12,7 +12,7 @@ func FormatRunResult(r *workflow.Result) map[string]any {
 		"errors":      r.Errors,
 		"retries":     r.Retries,
 		"duration_ms": r.DurationMS,
-		"run_id":      r.RunID,
+		"run_id":      r.ID,
 		"crawler":     r.Crawler,
 		"result":      r.Result,
 	}

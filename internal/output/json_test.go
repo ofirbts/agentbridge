@@ -3,13 +3,13 @@ package output
 import (
 	"testing"
 
-	"github.com/ofirbts/agentbridge/internal/workflow"
+	"github.com/ofirbts/agentbridge/internal/run"
 )
 
 func TestFormatRunResult(t *testing.T) {
-	out := FormatRunResult(&workflow.Result{
+	out := FormatRunResult(&run.Run{
 		Status: "success",
-		RunID:  "run_test",
+		ID:     "run_test",
 		Steps:  []string{"search"},
 	})
 	if out["status"] != "success" {
@@ -18,8 +18,8 @@ func TestFormatRunResult(t *testing.T) {
 }
 
 func TestFormatMarkdown(t *testing.T) {
-	md := FormatMarkdown(&workflow.Result{
-		RunID:  "run_test",
+	md := FormatMarkdown(&run.Run{
+		ID:     "run_test",
 		Status: "success",
 		Steps:  []string{"search", "crawl"},
 	})
