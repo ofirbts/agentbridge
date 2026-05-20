@@ -1,0 +1,15 @@
+---
+description: Core coding and agent standards for every session
+alwaysApply: true
+---
+
+# Core Standards
+
+- Minimize scope: smallest correct diff only
+- No comments in code unless explicitly requested
+- Always create or update tests for changed behavior
+- Never auto-commit; commit only when user asks
+- Match existing code style, naming, and abstractions
+- No secrets in code; use env vars and .env.example
+- Run tests before reporting work complete
+- JAVA_HOME when needed: C:\Program Files\JetBrains\IntelliJ IDEA 2024.3.5\jbr

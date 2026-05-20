@@ -1,0 +1,15 @@
+---
+description: Go conventions for AgentBridge
+globs: "**/*.go"
+alwaysApply: false
+---
+
+# Go Standards
+
+- Keep packages small: cmd, internal/workflow, internal/search, etc.
+- Interfaces in provider packages; mocks alongside
+- Always run `go test ./...` before finishing
+- Use `make build` not raw go build in docs unless debugging
+- Errors wrap with context: fmt.Errorf("step: %w", err)
+- No comments unless user requests
+- Deterministic mode must keep TestDeterministicSameInputsSameOutputs passing

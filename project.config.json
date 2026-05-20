@@ -1,0 +1,43 @@
+{
+  "name": "agentbridge",
+  "version": "0.1.0",
+  "language": "go",
+  "module": "github.com/yourname/agentbridge",
+  "workflow": {
+    "small_task": ["developer", "strict-reviewer"],
+    "large_task": ["architect", "developer", "strict-reviewer"],
+    "on_failure": ["debugger"]
+  },
+  "agents": {
+    "developer": ".cursor/agents/developer.md",
+    "strict-reviewer": ".cursor/agents/strict-reviewer.md",
+    "architect": ".cursor/agents/architect.md",
+    "debugger": ".cursor/agents/debugger.md"
+  },
+  "skills": {
+    "feature-build": ".cursor/skills/feature-build/SKILL.md",
+    "supabase-dev": ".cursor/skills/supabase-dev/SKILL.md",
+    "review-gate": ".cursor/skills/review-gate/SKILL.md"
+  },
+  "commands": {
+    "build": "make build",
+    "test": "make test",
+    "e2e": "make e2e",
+    "dev": "make dev"
+  },
+  "pr1_scope": [
+    "cmd/*",
+    "internal/*",
+    "go.mod",
+    "Makefile",
+    "README.md",
+    "docs/*",
+    "examples/*",
+    ".github/*"
+  ],
+  "out_of_scope": [
+    "web UI",
+    "real scraper engine",
+    "browser automation"
+  ]
+}

@@ -1,0 +1,32 @@
+---
+description: Standard build workflow — architect, developer, strict reviewer
+alwaysApply: true
+---
+
+# Build Workflow
+
+## Small / clear task
+1. developer — implement + tests
+2. strict-reviewer — review diff and tests
+3. Fix until APPROVED or user accepts warnings
+4. User commits when ready
+
+## Large / ambiguous task
+1. architect — plan and acceptance criteria
+2. User confirms plan
+3. developer — implement step by step with tests
+4. strict-reviewer — after each meaningful chunk or before merge
+5. debugger — if tests or runtime fail
+
+## AgentBridge specifics
+- Run `make test` before marking done
+- PR #1 scope: CLI + internal mocks + docs + examples
+- Out of scope: web UI, real scraper, browser automation
+
+## Before database or Supabase changes
+- Use supabase-dev skill
+- list_tables before schema changes
+- apply_migration for DDL
+
+## Before UI verification
+- Use cursor-ide-browser MCP after local server is running

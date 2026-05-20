@@ -1,0 +1,15 @@
+---
+description: Testing requirements
+globs: "**/*.{ts,tsx,js,jsx,py,java,go,rs}"
+alwaysApply: false
+---
+
+# Testing
+
+Every behavior change requires a test that would fail without the change.
+
+- Name tests after behavior, not implementation
+- Cover happy path and one meaningful edge case when relevant
+- Do not test trivial getters or framework boilerplate
+- Run the narrowest test command that covers your change before finishing
+- For Go: `make test` or `go test ./internal/... -v`
