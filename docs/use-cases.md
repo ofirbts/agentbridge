@@ -1,62 +1,48 @@
 # AgentBridge Use Cases
 
-Short scenarios showing where the execution layer fits. Each maps to commands in `examples/`.
+## AI research agent
 
-## 1. Reliable RAG context fetch
+**Input**
 
-**Problem:** Your agent needs web context but retries and failures are ad-hoc.
+```txt
+find AI infra startups
+```
 
-**Flow:** search → crawl → extract → normalize
+**Pipeline**
+
+```txt
+search → crawl → extract → normalize
+```
+
+**Command**
 
 ```bash
-./agentbridge run "summarize latest AI infra tooling" --search http --crawler http
+./agentbridge run "find AI infra startups" --mode deterministic
 ./agentbridge inspect <run-id> --format markdown
 ```
 
-**Example script:** `examples/ai_infra_search.sh`
+**Output**
 
-## 2. Deterministic CI smoke test
+Structured JSON with `run_id`, `step_logs`, and `result.normalized` (text, tokens, word_count) ready for a downstream LLM or RAG store.
 
-**Problem:** Pipelines need stable outputs for regression checks.
+**Why AgentBridge**
 
-```bash
-./agentbridge run "ci smoke task" --mode deterministic
-```
+- **Inspectable** — every run persisted; `inspect` shows per-step providers, duration, retries.
+- **Retryable** — search/crawl steps use retry policy; errors get `classified_errors`.
+- **Deterministic option** — same task → same output for CI and demos.
 
-Same task string → same `run_id` and mock payloads. See `docs/RULES.md`.
+Walkthrough: [examples/quickstart.md](../examples/quickstart.md)
 
-**Example script:** `examples/rag_task.sh`
+---
 
-## 3. Failure injection before production
+## Other scenarios
 
-**Problem:** You want to validate retry behavior without hitting production APIs.
-
-```bash
-./agentbridge simulate-failure --seed 42 --count 5
-./agentbridge run "task" --mode normal
-```
-
-**Example script:** `examples/simulate_then_fix.sh`
-
-## 4. Plan without executing
-
-**Problem:** Operators want to see providers and observability fields before a live run.
-
-```bash
-./agentbridge explain --task "multi-step web task" --search http --crawler http
-```
-
-Returns steps, providers, and `observability` metadata (inspect fields, error classes).
-
-## 5. MCP-augmented run (offline stub)
-
-**Problem:** Prototype tool-backed steps before wiring a live MCP server.
-
-```bash
-./agentbridge run "task" --mcp-endpoint http://localhost:8080/mcp --mcp-transport stub
-```
-
-**Example script:** `examples/search_http.sh` (search only; combine flags as needed)
+| Scenario | Doc |
+|----------|-----|
+| First-time flow (explain → run → inspect) | [quickstart.md](../examples/quickstart.md) |
+| CI / reproducible runs | [deterministic.md](../examples/deterministic.md) |
+| Real HTTP fetch | [http.md](../examples/http.md) |
+| Retry testing | [failure.md](../examples/failure.md) |
 
 ## What AgentBridge is not
 

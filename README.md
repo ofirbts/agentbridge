@@ -5,6 +5,13 @@
 [![Go](https://img.shields.io/badge/go-1.23+-blue.svg)](https://go.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+**Built for:**
+
+- AI Infrastructure
+- Agent Workflows
+- Reliability Engineering
+- Developer Experience
+
 **Reliable web execution for AI agents — in Go, as a CLI.**
 
 AgentBridge is a thin layer between your agent logic and the web: retries, structured runs, deterministic mode, and pluggable providers. Not a framework. Not a scraper. An **execution reliability** tool.
@@ -96,17 +103,7 @@ Common commands:
 
 ## Architecture
 
-```mermaid
-flowchart TB
-  CLI[Cobra CLI] --> Engine[Workflow Engine]
-  Engine --> Search[SearchProvider]
-  Engine --> Crawl[Crawler mock/http]
-  Engine --> Extract[Extract + Normalize]
-  Engine --> MCP[MCP stub/http]
-  Engine --> Store[(Run store .agentbridge/runs)]
-  Engine --> Trace[Tracer / step logs]
-  CLI --> Out[JSON / Markdown output]
-```
+![AgentBridge Execution Flow](docs/architecture.png)
 
 | Layer | Role |
 |-------|------|
@@ -153,14 +150,14 @@ Details: [docs/DECISION.md](docs/DECISION.md) · [docs/RULES.md](docs/RULES.md) 
 
 ## Examples
 
-| Script | What it shows |
-|--------|----------------|
-| `examples/ai_infra_search.sh` | HTTP crawl + explain |
-| `examples/rag_task.sh` | Deterministic run + inspect |
-| `examples/simulate_then_fix.sh` | Failure simulation |
-| `examples/search_http.sh` | HTTP search provider |
+| Guide | What it shows |
+|-------|----------------|
+| [examples/quickstart.md](examples/quickstart.md) | explain → run → inspect |
+| [examples/deterministic.md](examples/deterministic.md) | Reproducible CI-style runs |
+| [examples/http.md](examples/http.md) | Real HTTP crawl |
+| [examples/failure.md](examples/failure.md) | Failure simulation |
 
-Use cases: [docs/use-cases.md](docs/use-cases.md)
+Use case (AI research agent): [docs/use-cases.md](docs/use-cases.md)
 
 HTTP crawl against a real URL:
 
