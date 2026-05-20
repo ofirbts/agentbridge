@@ -192,7 +192,11 @@ make build
 make test
 make e2e
 make lint
+make benchmark
+make race
 ```
+
+Performance notes: [PERFORMANCE.md](PERFORMANCE.md)
 
 Contributions: [CONTRIBUTING.md](CONTRIBUTING.md)
 

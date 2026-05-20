@@ -23,7 +23,9 @@
     "build": "make build",
     "test": "make test",
     "e2e": "make e2e",
-    "dev": "make dev"
+    "dev": "make dev",
+    "benchmark": "make benchmark",
+    "race": "make race"
   },
   "pr3_scope": [
     "pkg/mcp/http.go",

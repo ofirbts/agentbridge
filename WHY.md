@@ -1,35 +1,32 @@
-# WHY — Phase 3: feat/observability
+# WHY — Phase 4: stability and performance
 
 ## Problem
 
-Tracer data was persisted as opaque `logs` but **never surfaced** in `inspect` or `explain`. Hiring managers could not see per-step duration, retries, or error types without reading raw JSON files.
+No baseline for latency/allocs; step logs had inconsistent provider metadata on plan/mcp steps; contributors lacked a single command for benchmarks and race checks.
 
 ## Solution
 
-- Structured `step_logs` on every run (duration, retries, provider, status, error_class)
-- `classified_errors` with stable taxonomy (rate_limit, timeout, server_error, …)
-- Per-step retry counts (delta per step, not cumulative)
-- Rich `inspect` JSON/markdown and `explain` observability section
-- Legacy `logs` field still loads into `step_logs`
+- `make benchmark`, `make profile`, `make race`
+- Benchmarks for engine, search, run store, classify
+- `PERFORMANCE.md` with measured results and tuning notes
+- Step log metadata: all engine steps use `AddStepWithMeta` with explicit providers
 
 ## Alternatives rejected
 
 | Alternative | Why rejected |
 |-------------|--------------|
-| Separate `agentbridge logs` command | Extra surface; inspect is the observability command |
-| OpenTelemetry export | Phase 4+ scope; violates “no dashboards” |
-| Drop plain `errors` array | Breaks existing scripts; keep both |
+| pprof HTTP server | Out of scope for CLI tool |
+| Optimizing away disk persist | Hides real CLI cost; document instead |
+| Benchmarks in CI gates | Flaky across machines |
 
 ## Tradeoffs
 
 | Choice | Benefit | Cost |
 |--------|---------|------|
-| Error classification by message heuristics | No new deps | Imperfect taxonomy |
-| Dual errors + classified_errors | Backward compatible | Slight redundancy |
-| Markdown table for steps | Readable inspect | Wide terminal output |
+| Benchmark includes disk persist | Realistic | Higher ns/op vs memory-only |
+| Document don't optimize yet | Honest portfolio signal | Not "blazing fast" marketing |
 
 ## Expected impact
 
-- `inspect` demonstrates reliability thinking clearly
-- `explain` sets expectations before execution
-- Foundation for Phase 4 benchmarks without new commands
+- Shows production awareness without over-engineering
+- Gives Phase 5 packagers concrete numbers

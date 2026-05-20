@@ -1,26 +1,22 @@
-# REVIEW — Phase 3: feat/observability
+# REVIEW — Phase 4: stability and performance
 
 ## Architecture review
 
-- **PASS** — Observability stays in `internal/observability` + `run` domain types; no new services.
-- `output` formats `run.Run` only; engine populates fields at end of `RunTask`.
+- **PASS** — Benchmarks live next to packages; no production code paths changed except step log provider labels.
 
 ## Complexity review
 
-- **PASS** — Classification is one function; step log conversion is a small mapper.
-- Legacy JSON migration isolated to `decodeRun`.
+- **PASS** — Four small bench files + Makefile targets; PERFORMANCE.md is data-driven.
 
 ## DX review
 
-- **PASS** — `inspect --format markdown` shows step timeline table.
-- `explain` includes `observability` block listing inspect fields and error classes.
+- **PASS** — `make benchmark` / `make race` discoverable; PERFORMANCE.md explains dominant costs.
 
 ## Future debt
 
-- Error classes are heuristic; may need explicit codes from providers later.
-- MCP/plan steps not always in step_logs timeline (plan/mcp are auxiliary).
-- Phase 4: benchmark step log overhead.
+- Engine benchmark includes filesystem side effects in temp dir.
+- Real HTTP providers not benchmarked in CI (network variance).
 
 ## Verdict
 
-**APPROVED** — Merge after full test suite + race detector.
+**APPROVED**

@@ -39,6 +39,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `make benchmark`, `make profile`, `make race`
+- Package benchmarks (engine, search, run store, classify)
+- `PERFORMANCE.md` with measured results
+
+### Changed
+
+- Step logs: plan/mcp/normalize use explicit provider metadata
+
+### Added (prior)
+
 - `step_logs` on runs: per-step duration, retries, provider, status, error_class
 - `classified_errors` with taxonomy (rate_limit, timeout, server_error, …)
 - `explain` observability section; `inspect` providers map in JSON

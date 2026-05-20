@@ -85,7 +85,7 @@ func (e *Engine) RunTask(task string) (*run.Run, error) {
 		MCP:     e.cfg.MCPEndpoint,
 	}
 
-	recorder.AddStep("plan", "started planning search and crawl steps")
+	recorder.AddStepWithMeta("plan", "ok", "workflow", task, 0, 0)
 
 	var searchResults []search.Result
 	var page []byte
@@ -100,7 +100,7 @@ func (e *Engine) RunTask(task string) (*run.Run, error) {
 			appendRunError(record, "mcp", err)
 		} else if len(tools) > 0 {
 			mcpPreview = tools[0]
-			recorder.AddStep("mcp", "listed tools: "+tools[0])
+			recorder.AddStepWithMeta("mcp", "ok", "mcp", tools[0], 0, 0)
 		}
 	}
 
@@ -132,13 +132,11 @@ func (e *Engine) RunTask(task string) (*run.Run, error) {
 	appendRunError(record, "crawl", crawlErr)
 
 	extractStart := time.Now()
-	recorder.AddStep("extract", "parsing content")
 	text, extractErr := e.extractor.Extract(page)
 	recorder.AddStepWithMeta("extract", statusFor(extractErr), "extractor", task, 0, time.Since(extractStart).Milliseconds())
 	appendRunError(record, "extract", extractErr)
 
 	normalizeStart := time.Now()
-	recorder.AddStep("normalize", "structuring output")
 	normalized := e.normalizer.Normalize(text)
 	if e.cfg.Mode == "deterministic" {
 		normalized = deterministicNormalize(normalized)

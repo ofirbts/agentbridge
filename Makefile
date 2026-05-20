@@ -1,4 +1,4 @@
-.PHONY: build test e2e dev clean lint
+.PHONY: build test e2e dev clean lint benchmark bench profile race
 
 BINARY = agentbridge
 
@@ -21,6 +21,17 @@ dev: build
 lint:
 	go vet ./...
 	go fmt ./...
+
+benchmark:
+	go test -bench=. -benchmem -count=3 ./...
+
+bench: benchmark
+
+profile:
+	go test -bench=BenchmarkEngineRunTaskDeterministic -benchmem -cpuprofile=cpu.prof -memprofile=mem.prof -count=1 ./internal/workflow/...
+
+race:
+	go test -race ./...
 
 clean:
 	rm -f $(BINARY)
