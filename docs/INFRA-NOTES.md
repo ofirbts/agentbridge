@@ -34,6 +34,22 @@ Your Providers (Bright Data / MCP / browser API)
 The Web
 ```
 
-## MCP (future)
+## MCP (PR #2 stub)
 
-MCP servers can back `SearchProvider` and `Crawler` implementations without changing the CLI surface.
+`pkg/mcp` provides:
+
+- JSON-RPC types (`Request`, `Response`, `ToolCallParams`)
+- `Client` interface and `StubClient`
+- CLI wiring via `--mcp-endpoint`
+
+Replace the stub with SSE/stdio transport when connecting to a live MCP server.
+
+## Real HTTP crawler (PR #2)
+
+`internal/crawl/http.go`:
+
+- timeout + user-agent
+- 429 / 5xx mapped to retry-friendly errors
+- enabled with `--crawler http`
+
+## MCP (future full integration)

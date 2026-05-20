@@ -1,6 +1,6 @@
 {
   "name": "agentbridge",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "language": "go",
   "module": "github.com/yourname/agentbridge",
   "workflow": {
@@ -25,19 +25,17 @@
     "e2e": "make e2e",
     "dev": "make dev"
   },
-  "pr1_scope": [
-    "cmd/*",
-    "internal/*",
-    "go.mod",
-    "Makefile",
-    "README.md",
-    "docs/*",
-    "examples/*",
-    ".github/*"
+  "pr2_scope": [
+    "cmd run/explain/inspect/simulate-failure enhancements",
+    "internal/crawl/http.go",
+    "pkg/mcp stub client",
+    "examples/*.sh",
+    "docs/INFRA-NOTES.md",
+    "docs/DECISION.md"
   ],
   "out_of_scope": [
     "web UI",
-    "real scraper engine",
+    "full scraper engine",
     "browser automation"
   ]
 }
