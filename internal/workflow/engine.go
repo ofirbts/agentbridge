@@ -16,6 +16,7 @@ import (
 type Config struct {
 	Mode         string
 	StorePath    string
+	Search       string
 	Crawler      string
 	MCPEndpoint  string
 	MCPTransport string
@@ -46,12 +47,16 @@ func NewEngine(cfg Config) (*Engine, error) {
 		}
 		mcpClient = client
 	}
+	searchKind := cfg.Search
+	if cfg.Mode == "deterministic" {
+		searchKind = "mock"
+	}
 	return &Engine{
 		cfg:        cfg,
 		policy:     ptr(failure.NewRetryPolicy(3, 100)),
 		tracer:     observability.NewTracer(),
 		runs:       run.NewRunStore(cfg.StorePath),
-		search:     search.NewMockProvider(),
+		search:     search.NewSearchProvider(searchKind),
 		crawler:    crawl.NewCrawler(cfg.Crawler),
 		extractor:  extract.NewExtractor(),
 		normalizer: extract.NewNormalizer(),

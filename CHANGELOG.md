@@ -37,9 +37,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `--search` flag: `mock` (default) or `http` (DuckDuckGo Instant Answer API)
+- `internal/search` HTTP provider with timeouts and retry-friendly errors
+- `examples/search_http.sh`
+
+### Changed
+
+- Deterministic mode always uses mock search
+- `explain` plan includes search provider in steps and providers list
+- Docs: DECISION.md and INFRA-NOTES.md reflect MCP HTTP and search providers
+
 ### Planned
 
-- Real search provider
 - Richer inspect output (step logs, error classes)
 - Benchmarks and performance notes
 

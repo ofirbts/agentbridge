@@ -34,22 +34,23 @@ Your Providers (Bright Data / MCP / browser API)
 The Web
 ```
 
-## MCP (PR #2 stub)
-
-`pkg/mcp` provides:
+## MCP (`pkg/mcp`)
 
 - JSON-RPC types (`Request`, `Response`, `ToolCallParams`)
-- `Client` interface and `StubClient`
-- CLI wiring via `--mcp-endpoint`
+- `Client` interface: `StubClient` and `HTTPClient`
+- CLI: `--mcp-endpoint`, `--mcp-transport` (`http` | `stub`)
 
-Replace the stub with SSE/stdio transport when connecting to a live MCP server.
+SSE/stdio transport is future work.
 
-## Real HTTP crawler (PR #2)
-
-`internal/crawl/http.go`:
+## HTTP crawler (`internal/crawl/http.go`)
 
 - timeout + user-agent
 - 429 / 5xx mapped to retry-friendly errors
-- enabled with `--crawler http`
+- CLI: `--crawler http`
 
-## MCP (future full integration)
+## Search (`internal/search`)
+
+- `SearchProvider` interface
+- `mock` (default, deterministic-safe)
+- `http` — DuckDuckGo Instant Answer API (no API key)
+- CLI: `--search mock|http`

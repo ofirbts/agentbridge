@@ -1,26 +1,27 @@
-# REVIEW — Phase 1: release/v0.1.0
+# REVIEW — Phase 2: feat/search-provider
 
 ## Architecture review
 
-- **PASS** — No code architecture changes. Docs align with actual packages (`cmd`, `internal/workflow`, providers, `pkg/mcp`).
-- Diagram matches implemented flow: CLI → engine → providers → run store.
+- **PASS** — Mirrors `crawl` factory pattern; engine remains orchestrator.
+- Search errors flow into existing `RetryWithPolicy` loop on search step.
+- No new packages; `internal/search` stays cohesive.
 
 ## Complexity review
 
-- **PASS** — README length increased but structure is scannable (tables, demo first).
-- CHANGELOG and CONTRIBUTING are minimal, no process overkill.
+- **PASS** — ~200 LOC for HTTP provider + tests; no new abstractions beyond factory.
+- DDG JSON parsing is localized with httptest fixtures.
 
 ## DX review
 
-- **PASS** — Quick start is copy-pasteable; `inspect` example uses real `run_id` format.
-- Examples directory linked; flags documented in one table.
+- **PASS** — `--search http` documented in RULES; example script added.
+- Deterministic mode behavior explained in `explain` output when search overridden.
 
 ## Future debt
 
-- README roadmap promises search/observability phases — track in issues.
-- No git tag pushed in this PR (optional follow-up).
-- `docs/DECISION.md` still mentions “Future MCP integration” though HTTP MCP exists — fix in small docs PR later.
+- DuckDuckGo API is not a full SERP; document in README.
+- No separate integration test against live API (network flake in CI).
+- Phase 3 should expose search provider name on run record / inspect.
 
 ## Verdict
 
-**APPROVED** — Documentation release ready to merge; run full test suite before merge (no code changes expected to fail).
+**APPROVED** — Merge after `make test`, `go test -race ./...`, `go vet ./...`.

@@ -20,10 +20,11 @@ var explainCmd = &cobra.Command{
 			return fmt.Errorf("task is required (--task or positional arg)")
 		}
 		mode, _ := cmd.Flags().GetString("mode")
+		search, _ := cmd.Flags().GetString("search")
 		crawler, _ := cmd.Flags().GetString("crawler")
 		mcpEndpoint, _ := cmd.Flags().GetString("mcp-endpoint")
 		mcpTransport, _ := cmd.Flags().GetString("mcp-transport")
-		plan := workflow.ExplainPlan(task, mode, crawler, mcpEndpoint, mcpTransport)
+		plan := workflow.ExplainPlan(task, mode, search, crawler, mcpEndpoint, mcpTransport)
 
 		format, _ := cmd.Flags().GetString("format")
 		if format == "text" {
@@ -41,6 +42,7 @@ var explainCmd = &cobra.Command{
 func init() {
 	explainCmd.Flags().String("task", "", "task to explain")
 	explainCmd.Flags().StringP("mode", "m", "normal", "execution mode (normal, deterministic)")
+	explainCmd.Flags().String("search", "mock", "search provider (mock, http)")
 	explainCmd.Flags().String("crawler", "mock", "crawler provider (mock, http)")
 	explainCmd.Flags().String("mcp-endpoint", "", "MCP server endpoint URL")
 	explainCmd.Flags().String("mcp-transport", "", "MCP transport (http, stub)")

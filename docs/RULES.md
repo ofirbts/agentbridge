@@ -21,6 +21,8 @@ When `--mode deterministic`:
 
 - `Search(query string) ([]Result, error)`
 - must be mockable for tests
+- `mock` — stable fixtures (always used in `--mode deterministic`)
+- `http` — DuckDuckGo Instant Answer API (no API key)
 
 ### Crawler
 

@@ -130,6 +130,7 @@ flowchart TB
 | Flag | Default | Description |
 |------|---------|-------------|
 | `--mode` | `normal` | `normal` or `deterministic` |
+| `--search` | `mock` | `mock` or `http` (DuckDuckGo API; forced to `mock` in deterministic mode) |
 | `--crawler` | `mock` | `mock` or `http` |
 | `--mcp-endpoint` | — | MCP server URL (optional) |
 | `--mcp-transport` | auto | `http` or `stub` |
@@ -175,8 +176,8 @@ MCP (offline stub):
 
 | Version | Focus |
 |---------|--------|
-| **v0.1.0** | CLI, mocks, HTTP crawler, MCP HTTP, docs (current) |
-| v0.2.x | Real search provider |
+| **v0.1.0** | CLI, mocks, HTTP crawler, MCP HTTP, docs |
+| **v0.2.x** | HTTP search provider (`--search http`) |
 | v0.3.x | Richer inspect / observability |
 | v1.x | Open-source packaging, benchmarks, examples |
 

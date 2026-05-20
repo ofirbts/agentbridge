@@ -51,7 +51,7 @@ func TestDeterministicSameInputsSameOutputs(t *testing.T) {
 }
 
 func TestExplainPlanDeterministic(t *testing.T) {
-	plan := ExplainPlan("task", "deterministic", "mock", "", "")
+	plan := ExplainPlan("task", "deterministic", "mock", "mock", "", "")
 	if plan.Mode != "deterministic" {
 		t.Fatalf("expected deterministic mode")
 	}
@@ -76,6 +76,20 @@ func TestEngineWithMCPEndpoint(t *testing.T) {
 	}
 	if record.MCP == "" {
 		t.Fatal("expected mcp endpoint on result")
+	}
+}
+
+func TestDeterministicForcesMockSearch(t *testing.T) {
+	engine, err := NewEngine(Config{
+		Mode:      "deterministic",
+		StorePath: t.TempDir(),
+		Search:    "http",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if engine.search.Name() != "mock" {
+		t.Fatalf("expected mock search in deterministic mode, got %s", engine.search.Name())
 	}
 }
 

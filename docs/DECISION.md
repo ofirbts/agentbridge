@@ -35,16 +35,17 @@ Frameworks optimize for agent logic. AgentBridge optimizes for **durable web exe
 | CLI-first | simple ops, easy CI | no GUI |
 | File-backed run store | inspect works across CLI invocations | local filesystem dependency |
 
-## PR #2 additions
+## Shipped capabilities
 
-- real HTTP crawler (`--crawler http`)
-- MCP stub client in `pkg/mcp`
-- richer `explain` / `inspect` / `simulate-failure` CLI output
-- markdown inspect format
+| Area | CLI | Notes |
+|------|-----|-------|
+| HTTP crawl | `--crawler http` | timeouts, retry-friendly errors |
+| MCP | `--mcp-endpoint`, `--mcp-transport` | stub + HTTP JSON-RPC (`tools/list`, `tools/call`) |
+| Search | `--search mock` (default) | HTTP provider in Phase 2 |
 
 ## Future (not current scope)
 
-- MCP integration
+- MCP SSE/stdio transport
 - real browser automation backend
-- plugin system for providers
+- plugin registry for third-party providers
 - OpenTelemetry export

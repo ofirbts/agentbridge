@@ -16,6 +16,7 @@ var runCmd = &cobra.Command{
 		task := args[0]
 		mode, _ := cmd.Flags().GetString("mode")
 		storePath, _ := cmd.Flags().GetString("store")
+		search, _ := cmd.Flags().GetString("search")
 		crawler, _ := cmd.Flags().GetString("crawler")
 		mcpEndpoint, _ := cmd.Flags().GetString("mcp-endpoint")
 		mcpTransport, _ := cmd.Flags().GetString("mcp-transport")
@@ -23,6 +24,7 @@ var runCmd = &cobra.Command{
 		engine, err := workflow.NewEngine(workflow.Config{
 			Mode:         mode,
 			StorePath:    storePath,
+			Search:       search,
 			Crawler:      crawler,
 			MCPEndpoint:  mcpEndpoint,
 			MCPTransport: mcpTransport,
@@ -56,6 +58,7 @@ var runCmd = &cobra.Command{
 func init() {
 	runCmd.Flags().StringP("mode", "m", "normal", "execution mode (normal, deterministic)")
 	runCmd.Flags().String("store", ".agentbridge/runs", "run store directory")
+	runCmd.Flags().String("search", "mock", "search provider (mock, http)")
 	runCmd.Flags().String("crawler", "mock", "crawler provider (mock, http)")
 	runCmd.Flags().String("mcp-endpoint", "", "MCP server endpoint URL")
 	runCmd.Flags().String("mcp-transport", "", "MCP transport (http, stub); default http for http(s) endpoints")

@@ -11,6 +11,7 @@ type PlanStep struct {
 type Plan struct {
 	Task        string     `json:"task"`
 	Mode        string     `json:"mode"`
+	Search      string     `json:"search"`
 	Crawler     string     `json:"crawler"`
 	MCPEndpoint string     `json:"mcp_endpoint,omitempty"`
 	Steps       []PlanStep `json:"steps"`
@@ -23,26 +24,36 @@ func DefaultSteps() []string {
 	return []string{"search", "crawl", "extract", "normalize"}
 }
 
-func defaultPlanSteps(crawler string) []PlanStep {
+func defaultPlanSteps(search, crawler string) []PlanStep {
 	return []PlanStep{
-		{Name: "search", Provider: "mock_search", Description: "resolve candidate URLs for the task"},
+		{Name: "search", Provider: search, Description: "resolve candidate URLs for the task"},
 		{Name: "crawl", Provider: crawler, Description: "fetch page content with retries"},
 		{Name: "extract", Provider: "extractor", Description: "strip HTML and extract text"},
 		{Name: "normalize", Provider: "normalizer", Description: "structure output for downstream agents"},
 	}
 }
 
-func ExplainPlan(task, mode, crawler, mcpEndpoint, mcpTransport string) Plan {
+func ExplainPlan(task, mode, search, crawler, mcpEndpoint, mcpTransport string) Plan {
+	if search == "" {
+		search = "mock"
+	}
 	if crawler == "" {
 		crawler = "mock"
+	}
+	effectiveSearch := search
+	if mode == "deterministic" {
+		effectiveSearch = "mock"
 	}
 	behavior := "best-effort execution with retries"
 	runHint := ""
 	if mode == "deterministic" {
 		behavior = "stable ordering, fixed run id seed, reproducible mock outputs"
+		if search != "mock" {
+			behavior += " (search forced to mock in deterministic mode)"
+		}
 		runHint = "deterministic run id derived from task hash"
 	}
-	providers := []string{"mock_search", crawler, "extractor", "normalizer"}
+	providers := []string{effectiveSearch, crawler, "extractor", "normalizer"}
 	if mcpEndpoint != "" {
 		transport := mcpTransport
 		if transport == "" {
@@ -54,9 +65,10 @@ func ExplainPlan(task, mode, crawler, mcpEndpoint, mcpTransport string) Plan {
 	return Plan{
 		Task:        task,
 		Mode:        mode,
+		Search:      search,
 		Crawler:     crawler,
 		MCPEndpoint: mcpEndpoint,
-		Steps:       defaultPlanSteps(crawler),
+		Steps:       defaultPlanSteps(effectiveSearch, crawler),
 		Providers:   providers,
 		Behavior:    behavior,
 		RunIDHint:   runHint,
