@@ -1,32 +1,32 @@
-# WHY — Phase 4: stability and performance
+# WHY — Phase 5: open-source packaging
 
 ## Problem
 
-No baseline for latency/allocs; step logs had inconsistent provider metadata on plan/mcp steps; contributors lacked a single command for benchmarks and race checks.
+v0.1.0 tag existed but most portfolio value shipped after it. No use-case index, no contributor onboarding issue template, CHANGELOG `[Unreleased]` was cluttered, and GitHub had no v0.2.0 release artifact.
 
 ## Solution
 
-- `make benchmark`, `make profile`, `make race`
-- Benchmarks for engine, search, run store, classify
-- `PERFORMANCE.md` with measured results and tuning notes
-- Step log metadata: all engine steps use `AddStepWithMeta` with explicit providers
+- Consolidate changelog into **v0.2.0** (v1 candidate baseline)
+- `docs/use-cases.md` + examples table in README
+- Good first issue template + issue chooser config
+- Release badge; tag `v0.2.0` with release notes from CHANGELOG
 
 ## Alternatives rejected
 
 | Alternative | Why rejected |
 |-------------|--------------|
-| pprof HTTP server | Out of scope for CLI tool |
-| Optimizing away disk persist | Hides real CLI cost; document instead |
-| Benchmarks in CI gates | Flaky across machines |
+| Jump to v1.0.0 | Scope still CLI-only; 0.2.0 honest semver |
+| GitHub Pages site | Extra maintenance; README is primary |
+| Auto-release Action | YAGNI for solo OSS portfolio |
 
 ## Tradeoffs
 
 | Choice | Benefit | Cost |
 |--------|---------|------|
-| Benchmark includes disk persist | Realistic | Higher ns/op vs memory-only |
-| Document don't optimize yet | Honest portfolio signal | Not "blazing fast" marketing |
+| v0.2.0 not v1.0 | Signals maturity without overclaiming | Another version to track |
+| docs/use-cases vs wiki | Lives in repo | Another doc file |
 
 ## Expected impact
 
-- Shows production awareness without over-engineering
-- Gives Phase 5 packagers concrete numbers
+- Recruiters see releases, use cases, and contribution path in one glance
+- Clear “first issue” lowers friction for drive-by contributors

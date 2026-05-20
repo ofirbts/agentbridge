@@ -1,6 +1,7 @@
 # AgentBridge
 
 [![CI](https://github.com/ofirbts/agentbridge/actions/workflows/ci.yml/badge.svg)](https://github.com/ofirbts/agentbridge/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/ofirbts/agentbridge?label=release)](https://github.com/ofirbts/agentbridge/releases)
 [![Go](https://img.shields.io/badge/go-1.23+-blue.svg)](https://go.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -146,17 +147,20 @@ flowchart TB
 3. **Failure is default** — retries and simulation are first-class.
 4. **Mocks before integrations** — fast CI, clear contracts; swap providers later.
 
-Details: [docs/DECISION.md](docs/DECISION.md) · [docs/RULES.md](docs/RULES.md) · [docs/INFRA-NOTES.md](docs/INFRA-NOTES.md)
+Details: [docs/DECISION.md](docs/DECISION.md) · [docs/RULES.md](docs/RULES.md) · [docs/INFRA-NOTES.md](docs/INFRA-NOTES.md) · [docs/use-cases.md](docs/use-cases.md)
 
 ---
 
 ## Examples
 
-```bash
-./examples/ai_infra_search.sh
-./examples/rag_task.sh
-./examples/simulate_then_fix.sh
-```
+| Script | What it shows |
+|--------|----------------|
+| `examples/ai_infra_search.sh` | HTTP crawl + explain |
+| `examples/rag_task.sh` | Deterministic run + inspect |
+| `examples/simulate_then_fix.sh` | Failure simulation |
+| `examples/search_http.sh` | HTTP search provider |
+
+Use cases: [docs/use-cases.md](docs/use-cases.md)
 
 HTTP crawl against a real URL:
 
@@ -176,10 +180,9 @@ MCP (offline stub):
 
 | Version | Focus |
 |---------|--------|
-| **v0.1.0** | CLI, mocks, HTTP crawler, MCP HTTP, docs |
-| **v0.2.x** | HTTP search provider (`--search http`) |
-| v0.3.x | Step logs, classified errors, inspect timeline |
-| v1.x | Open-source packaging, benchmarks, examples |
+| v0.1.0 | CLI, mocks, HTTP crawler, MCP HTTP, docs |
+| **v0.2.0** | Search HTTP, observability, benchmarks, OSS packaging (current) |
+| v1.x | OpenTelemetry export, plugin registry |
 
 See [CHANGELOG.md](CHANGELOG.md).
 

@@ -1,21 +1,21 @@
-# REVIEW — Phase 4: stability and performance
+# REVIEW — Phase 5: open-source packaging
 
 ## Architecture review
 
-- **PASS** — Benchmarks live next to packages; no production code paths changed except step log provider labels.
+- **PASS** — Docs and GitHub metadata only; no runtime changes.
 
 ## Complexity review
 
-- **PASS** — Four small bench files + Makefile targets; PERFORMANCE.md is data-driven.
+- **PASS** — Issue template and use-cases are minimal.
 
 ## DX review
 
-- **PASS** — `make benchmark` / `make race` discoverable; PERFORMANCE.md explains dominant costs.
+- **PASS** — README links examples ↔ use cases; CHANGELOG compare links for releases.
 
 ## Future debt
 
-- Engine benchmark includes filesystem side effects in temp dir.
-- Real HTTP providers not benchmarked in CI (network variance).
+- GitHub Release body may need manual polish if `gh` unavailable in CI environment.
+- v1.0 blocked on explicit API stability commitment.
 
 ## Verdict
 

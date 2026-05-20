@@ -5,6 +5,27 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+Nothing yet.
+
+## [0.2.0] - 2026-05-20
+
+### Added
+
+- HTTP search provider (`--search http`, DuckDuckGo Instant Answer API)
+- `step_logs` and `classified_errors` on runs; richer `inspect` / `explain`
+- `make benchmark`, `make profile`, `make race`; `PERFORMANCE.md`
+- `docs/use-cases.md`, good first issue template
+- Examples: `search_http.sh`
+
+### Changed
+
+- Deterministic mode forces mock search
+- Per-step retry counts in step logs
+- Step log provider metadata on all engine steps
+- Documentation refresh (README v0.1 structure, DECISION/INFRA-NOTES drift fixes)
+
 ## [0.1.0] - 2026-05-20
 
 ### Added
@@ -35,35 +56,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MCP client initialization errors surface via `NewEngine`
 - Mock search URL uses `https://example.com` for successful HTTP demos
 
-## [Unreleased]
-
-### Added
-
-- `make benchmark`, `make profile`, `make race`
-- Package benchmarks (engine, search, run store, classify)
-- `PERFORMANCE.md` with measured results
-
-### Changed
-
-- Step logs: plan/mcp/normalize use explicit provider metadata
-
-### Added (prior)
-
-- `step_logs` on runs: per-step duration, retries, provider, status, error_class
-- `classified_errors` with taxonomy (rate_limit, timeout, server_error, …)
-- `explain` observability section; `inspect` providers map in JSON
-- Legacy run files with `logs` field load into `step_logs`
-- `--search` flag: `mock` (default) or `http` (DuckDuckGo Instant Answer API)
-- `internal/search` HTTP provider; `examples/search_http.sh`
-
-### Changed
-
-- Deterministic mode always uses mock search
-- Per-step retry counts (not cumulative) in step logs
-- Docs: DECISION.md and INFRA-NOTES.md reflect MCP HTTP and search providers
-
-### Planned
-
-- Benchmarks and performance notes (Phase 4)
-
+[Unreleased]: https://github.com/ofirbts/agentbridge/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/ofirbts/agentbridge/releases/tag/v0.2.0
 [0.1.0]: https://github.com/ofirbts/agentbridge/releases/tag/v0.1.0

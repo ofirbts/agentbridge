@@ -1,0 +1,15 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Contributing guide
+    url: https://github.com/ofirbts/agentbridge/blob/main/CONTRIBUTING.md
+    about: How to build, test, and open PRs
+issue_templates:
+  - name: Bug report
+    description: Report a failure or incorrect behavior
+    file: bug_report.md
+  - name: Feature request
+    description: Propose a new capability
+    file: feature_request.md
+  - name: Good first issue
+    description: Small starter task for new contributors
+    file: good_first_issue.md
